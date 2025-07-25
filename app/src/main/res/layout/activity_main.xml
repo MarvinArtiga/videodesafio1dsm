@@ -85,7 +85,13 @@
                 android:text="Otro"
                 android:textColor="#000000" />
         </RadioGroup>
-
+        <EditText
+            android:id="@+id/etOtroPorcentaje"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese porcentaje personalizado"
+            android:inputType="numberDecimal"
+            android:visibility="gone" />
         <Switch
             android:id="@+id/switchIVA"
             android:layout_width="wrap_content"

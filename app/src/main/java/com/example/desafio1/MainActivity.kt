@@ -1,6 +1,7 @@
 package com.example.desafio1
 
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
@@ -13,6 +14,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnCalcular: Button
     private lateinit var btnLimpiar: Button
     private lateinit var tvResultado: TextView
+    private lateinit var etOtroPorcentaje: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         btnCalcular = findViewById(R.id.btnCalcular)
         btnLimpiar = findViewById(R.id.btnLimpiar)
         tvResultado = findViewById(R.id.tvResultado)
+        etOtroPorcentaje = findViewById(R.id.etOtroPorcentaje)
 
         btnCalcular.setOnClickListener {
             calcularPropina()
@@ -32,6 +35,15 @@ class MainActivity : AppCompatActivity() {
 
         btnLimpiar.setOnClickListener {
             limpiarCampos()
+        }
+
+        rgPropina.setOnCheckedChangeListener { _, checkedId ->
+            if (checkedId == R.id.rbOtro) {
+                etOtroPorcentaje.visibility = View.VISIBLE
+            } else {
+                etOtroPorcentaje.visibility = View.GONE
+                etOtroPorcentaje.text.clear()
+            }
         }
     }
 
@@ -47,6 +59,10 @@ class MainActivity : AppCompatActivity() {
         val monto = montoStr.toDouble()
         val personas = personasStr.toInt()
 
+        if (monto == 0.0) {
+            Toast.makeText(this, "Comiste gratis, no hay nada que calcular mano", Toast.LENGTH_SHORT).show()
+            return
+        }
         if (personas == 0) {
             Toast.makeText(this, "¿Cero personas? ¿Y quién come pues?", Toast.LENGTH_SHORT).show()
             return
@@ -56,7 +72,19 @@ class MainActivity : AppCompatActivity() {
             R.id.rb10 -> 0.10
             R.id.rb15 -> 0.15
             R.id.rb20 -> 0.20
-            R.id.rbOtro -> 0.18  // valor por defecto si eligen "Otro"
+            R.id.rbOtro -> {
+                val otroStr = etOtroPorcentaje.text.toString()
+                if (otroStr.isEmpty()) {
+                    Toast.makeText(this, "Ingresá un porcentaje personalizado", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                val otroValor = otroStr.toDoubleOrNull()
+                if (otroValor == null || otroValor < 0) {
+                    Toast.makeText(this, "Porcentaje inválido", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                otroValor / 100
+            }
             else -> 0.0
         }
 
@@ -76,6 +104,8 @@ class MainActivity : AppCompatActivity() {
         etNumeroPersonas.text.clear()
         rgPropina.clearCheck()
         switchIVA.isChecked = false
+        etOtroPorcentaje.text.clear()
+        etOtroPorcentaje.visibility = View.GONE
         tvResultado.text = ""
     }
 }
